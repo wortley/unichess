@@ -17,7 +17,7 @@ def opponent_ind(turn: int):
     return int(not bool(turn))
 
 
-def serialise_game_state(game):
+def serialise_game_state(game: Game):
     """Serialise game state to JSON string for storage in Redis"""
     if not game:
         return
@@ -26,7 +26,7 @@ def serialise_game_state(game):
     return json.dumps(game_dict)
 
 
-def deserialise_game_state(game):
+def deserialise_game_state(game: str):
     """Deserialise game state from Redis JSON string"""
     if not game:
         return
@@ -35,6 +35,6 @@ def deserialise_game_state(game):
     return Game(**game_dict)
 
 
-async def publish_event(channel, gid, event: Event, rk=BROADCAST_KEY):
+async def publish_event(channel, gid: str, event: Event, rk=BROADCAST_KEY):
     # TODO: better place to put this?
     channel.basic_publish(exchange=gid, routing_key=rk, body=json.dumps(event.__dict__))

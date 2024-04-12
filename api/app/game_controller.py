@@ -3,20 +3,26 @@ import json
 import os
 import random
 import uuid
+from logging import Logger
 from time import time_ns
+from typing import Tuple
 
-import aioredis
 import app.utils as utils
+from aioredis import RedisError
+from aioredis.client import Redis
 from app.constants import BROADCAST_KEY, MAX_EMIT_RETRIES, TimeConstants
 from app.exceptions import CustomException
+from app.game_registry import GameRegistry
 from app.models import Colour, Event, Game
 from app.rate_limit import RateLimitConfig
+from app.rmq import RMQConnectionManager
 from chess import Board
+from socketio.asyncio_server import AsyncServer
 
 
 class GameController:
 
-    def __init__(self, rmq, redis_client, sio, gr, logger):
+    def __init__(self, rmq: RMQConnectionManager, redis_client: Redis, sio: AsyncServer, gr: GameRegistry, logger: Logger):
         self.rmq = rmq
         self.redis_client = redis_client
         self.sio = sio
@@ -45,17 +51,17 @@ class GameController:
 
         self.gr.add_game_ctag(gid, self.rmq.channel.basic_consume(queue=utils.get_queue_name(gid, sid), on_message_callback=on_message, auto_ack=True))
 
-    async def get_game_by_gid(self, gid, sid):
+    async def get_game_by_gid(self, gid, sid) -> Game:
         """Get game state from redis by game ID"""
         try:
             game = utils.deserialise_game_state(await self.redis_client.get(utils.get_redis_key(gid)))
-        except aioredis.RedisError as exc:
+        except RedisError as exc:
             raise CustomException(f"Redis error: {exc}", sid)
         if not game:
             raise CustomException("Game not found", sid)
         return game
 
-    async def get_game_by_sid(self, sid):
+    async def get_game_by_sid(self, sid) -> Tuple[Game, str]:
         """Get game state from redis by player ID"""
         gid = self.gr.get_gid(sid)
         game = await self.get_game_by_gid(gid, sid)
@@ -65,7 +71,7 @@ class GameController:
         """Save game state in Redis"""
         try:
             await self.redis_client.set(utils.get_redis_key(gid), utils.serialise_game_state(game))
-        except aioredis.RedisError as exc:
+        except RedisError as exc:
             raise CustomException(f"Redis error: {exc}", emit_local=False, gid=gid)
 
     async def create(self, sid, time_control):

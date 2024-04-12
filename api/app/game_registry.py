@@ -5,7 +5,7 @@ class GameRegistry:
     """Stores two hash tables mapping player IDs to game IDs and game IDs to MQ consumer tags, respectively"""
 
     def __init__(self):
-        self.players_to_gids = {}
+        self.players_to_gids = dict()
         self.gids_to_ctags = defaultdict(list)
 
     def get_gid(self, sid):

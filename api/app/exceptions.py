@@ -1,5 +1,9 @@
+from logging import Logger
+
 import app.utils as utils
 from app.models import Event
+from app.rmq import RMQConnectionManager
+from socketio.asyncio_server import AsyncServer
 
 
 class CustomException(Exception):
@@ -16,7 +20,7 @@ class CustomException(Exception):
 
 
 class SocketIOExceptionHandler:
-    def __init__(self, sio, rmq, logger):
+    def __init__(self, sio: AsyncServer, rmq: RMQConnectionManager, logger: Logger):
         self.sio = sio
         self.rmq = rmq
         self.logger = logger

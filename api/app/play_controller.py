@@ -4,7 +4,9 @@ from typing import List, Optional
 
 import app.utils as utils
 from app.exceptions import CustomException
+from app.game_controller import GameController
 from app.models import Castles, Event, Outcome
+from app.rmq import RMQConnectionManager
 from chess import Move
 
 
@@ -26,7 +28,7 @@ class MoveData:
 
 class PlayController:
 
-    def __init__(self, rmq, gc):
+    def __init__(self, rmq: RMQConnectionManager, gc: GameController):
         self.rmq = rmq
         self.gc = gc
 

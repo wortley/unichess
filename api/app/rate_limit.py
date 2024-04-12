@@ -1,4 +1,5 @@
 import asyncio
+from typing import Optional
 
 
 class RateLimitConfig:
@@ -11,7 +12,7 @@ class RateLimitConfig:
 class TokenBucketRateLimiter:
     def __init__(self):
         self.bucket = RateLimitConfig.INITIAL_TOKENS
-        self.refiller = None
+        self.refiller: Optional[asyncio.Task] = None
 
     async def refill_tokens(self):
         """

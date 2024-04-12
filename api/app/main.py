@@ -52,6 +52,7 @@ async def lifespan(_):
     await redis_client.close()  # close redis connection
 
 
+# Create FastAPI app instance
 chess_api = FastAPI(lifespan=lifespan)
 
 chess_api.add_middleware(
