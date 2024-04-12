@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import Dict, List, Optional
 
 from chess import Board
 
@@ -34,4 +34,4 @@ class Game:
 @dataclass
 class Event:
     name: str
-    data: int | str | dict
+    data: Optional[int | str | Dict[str, Optional[int]]]
