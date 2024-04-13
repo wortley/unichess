@@ -10,7 +10,7 @@ from typing import Tuple
 import app.utils as utils
 from aioredis import RedisError
 from aioredis.client import Redis
-from app.constants import BROADCAST_KEY, MAX_EMIT_RETRIES, TimeConstants
+from app.config import BROADCAST_KEY, MAX_EMIT_RETRIES, TimeConstants
 from app.exceptions import CustomException
 from app.game_registry import GameRegistry
 from app.models import Colour, Event, Game

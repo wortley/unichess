@@ -1,6 +1,6 @@
 import json
 
-from app.constants import BROADCAST_KEY
+from app.config import BROADCAST_KEY
 from app.models import Event, Game
 from chess import Board
 
