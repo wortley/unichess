@@ -2,12 +2,14 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_URL } from "../../constants";
+import { useTokenStore } from "../../store";
 import styles from "./login.module.css";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const tokenStore = useTokenStore();
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -24,8 +26,7 @@ export default function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        // TODO: redux
-        localStorage.setItem("token", data.access_token);
+        tokenStore.setToken(data.access_token);
         navigate("/");
       } else {
         toast.error(response.statusText);
