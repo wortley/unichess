@@ -1,21 +1,20 @@
+import Cookies from "js-cookie";
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { API_URL } from "../../constants";
-import { useTokenStore } from "../../store";
+import { API_URL, COOKIE_ATTRS } from "../../constants";
 import styles from "./login.module.css";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const tokenStore = useTokenStore();
 
   useEffect(() => {
-    if (tokenStore.token) {
+    if (Cookies.get("token")) {
       navigate("/");
     }
-  }, [tokenStore.token, navigate]);
+  }, []);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -33,7 +32,8 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        tokenStore.setToken(data.access_token);
+        Cookies.set("token", data.access_token, COOKIE_ATTRS);
+        navigate("/");
       } else {
         toast.error(data.detail);
       }
