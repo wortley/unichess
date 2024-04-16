@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_URL } from "../../constants";
@@ -10,6 +10,12 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const tokenStore = useTokenStore();
+
+  useEffect(() => {
+    if (tokenStore.token) {
+      navigate("/");
+    }
+  }, [tokenStore.token, navigate]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -24,12 +30,12 @@ export default function Login() {
         body: formData,
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         tokenStore.setToken(data.access_token);
-        navigate("/");
       } else {
-        toast.error(response.statusText);
+        toast.error(data.detail);
       }
     } catch (error) {
       toast.error("Network error, please try again later");
